@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "953525192803",
+    "project_id": "bq-fresh-driver",
+    "storage_bucket": "bq-fresh-driver.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953525192803:android:af32e150aaeb4c2ac21056",
+        "android_client_info": {
+          "package_name": "com.app.bqfreshdriver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqlHBv_ujRedFeadsYaM64zmKohE5L5rA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
