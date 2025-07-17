@@ -55,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                 return Column(children: [
 
-                  Image.asset(Images.logo, width: 200),
+                  Image.asset(Images.logo, width: 150),
                   const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
                   Text('sign_in'.tr.toUpperCase(), style: robotoBlack.copyWith(fontSize: 30)),
