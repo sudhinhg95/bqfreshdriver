@@ -45,7 +45,7 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAeZ2m_5l8k47Y3S11AWddoNCK2XHpcP0U"/>
+            android:value="AIzaSyCQRda0t97PB8vAfMGXLNjSlntOto8-lFI"/>
 
         <activity
             android:name=".MainActivity"
