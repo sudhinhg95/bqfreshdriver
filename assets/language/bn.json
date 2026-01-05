@@ -105,6 +105,7 @@
   "yes": "হ্যাঁ",
   "no_order_found": "কোন অর্ডার পাওয়া যায়নি",
   "my_orders": "আমার অর্ডারস",
+  "delivered_orders": "ডেলিভার করা অর্ডার",
   "order_amount": "অর্ডারের অ্যামাউন্ট",
   "invalid_phone_number_found": "ইনভ্যালিড ফোন নম্বর পাওয়া গেছে",
   "could_not_launch": "লঞ্চ করা যায়নি",

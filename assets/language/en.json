@@ -105,6 +105,7 @@
   "yes": "Yes",
   "no_order_found": "No order found",
   "my_orders": "My Orders",
+  "delivered_orders": "Delivered Orders",
   "order_amount": "Order Amount",
   "invalid_phone_number_found": "Invalid phone number found",
   "could_not_launch": "Could not launch",

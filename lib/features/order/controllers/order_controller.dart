@@ -110,12 +110,34 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getOrderWithId(int? orderId) async {
     _orderModel = null;
-    Response response = await orderServiceInterface.getOrderWithId(orderId);
-    if(response.statusCode == 200) {
-      _orderModel = OrderModel.fromJson(response.body);
-    }else {
-      Navigator.pop(Get.context!);
-      await Get.find<OrderController>().getCurrentOrders();
+    debugPrint('[getOrderWithId] Fetching order with ID: ' + orderId.toString());
+    try {
+      Response response = await orderServiceInterface.getOrderWithId(orderId).timeout(const Duration(seconds: 10), onTimeout: () {
+        debugPrint('[getOrderWithId] API call timed out for order ID: ' + orderId.toString());
+        showCustomSnackBar('Order API timed out (ID: ' + orderId.toString() + ')', isError: true);
+        update();
+        return Response(statusCode: 408, statusText: 'Request Timeout');
+      });
+      debugPrint('[getOrderWithId] Response status: ' + response.statusCode.toString());
+      if(response.statusCode == 200) {
+        try {
+          debugPrint('[getOrderWithId] Raw response body: ' + response.body.toString());
+          _orderModel = OrderModel.fromJson(response.body);
+          debugPrint('[getOrderWithId] Order found: ' + _orderModel.toString());
+        } catch (e, stack) {
+          debugPrint('[getOrderWithId] Error parsing OrderModel: ' + e.toString());
+          debugPrint(stack.toString());
+          showCustomSnackBar('Order data error: ' + e.toString(), isError: true);
+        }
+      } else {
+        debugPrint('[getOrderWithId] Order not found or error. Status: ' + response.statusCode.toString() + ', Body: ' + response.body.toString());
+        showCustomSnackBar('Order not found or cannot be opened (ID: ' + orderId.toString() + ')', isError: true);
+        await Get.find<OrderController>().getCurrentOrders();
+      }
+    } catch (e, stack) {
+      debugPrint('[getOrderWithId] Exception: ' + e.toString());
+      debugPrint(stack.toString());
+      showCustomSnackBar('Order loading error: ' + e.toString(), isError: true);
     }
     update();
   }
@@ -209,15 +231,30 @@ class OrderController extends GetxController implements GetxService {
   Future<void> getOrderDetails(int? orderID, bool parcel) async {
     if(parcel) {
       _orderDetailsModel = [];
-    }else {
-      _orderDetailsModel = null;
-      List<OrderDetailsModel>? orderDetailsModel = await orderServiceInterface.getOrderDetails(orderID);
+      update();
+      return;
+    }
+
+    _orderDetailsModel = null;
+    try {
+      List<OrderDetailsModel>? orderDetailsModel = await orderServiceInterface
+          .getOrderDetails(orderID)
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        showCustomSnackBar('Order details request timed out', isError: true);
+        return null;
+      });
       if(orderDetailsModel != null) {
         _orderDetailsModel = [];
         _orderDetailsModel!.addAll(orderDetailsModel);
+      } else {
+        showCustomSnackBar('Unable to load order details', isError: true);
+        _orderDetailsModel = [];
       }
-      update();
+    } catch (e) {
+      showCustomSnackBar('Order details error: ' + e.toString(), isError: true);
+      _orderDetailsModel = [];
     }
+    update();
   }
 
   Future<bool> acceptOrder(int? orderID, int index, OrderModel orderModel) async {

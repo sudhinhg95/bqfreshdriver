@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:sixam_mart_delivery/features/order/controllers/order_controller.dart';
 import 'package:sixam_mart_delivery/util/dimensions.dart';
 import 'package:sixam_mart_delivery/common/widgets/custom_app_bar_widget.dart';
 import 'package:sixam_mart_delivery/features/order/widgets/history_order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sixam_mart_delivery/features/order/screens/multi_order_route_screen.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -14,6 +16,7 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   final ScrollController scrollController = ScrollController();
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
@@ -33,7 +36,19 @@ class _OrderScreenState extends State<OrderScreen> {
         }
       }
     });
+    // Auto-refresh every 30 seconds
+    _autoRefreshTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+      Get.find<OrderController>().getCurrentOrders();
+    });
   }
+
+  @override
+  void dispose() {
+    _autoRefreshTimer?.cancel();
+    scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -41,11 +56,22 @@ class _OrderScreenState extends State<OrderScreen> {
 
       appBar: CustomAppBarWidget(title: 'my_orders'.tr, isBackButtonExist: false),
 
-      body: GetBuilder<OrderController>(builder: (orderController) {
+      // Add navigation button to MultiOrderRouteScreen
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MultiOrderRouteScreen()),
+          );
+        },
+        label: Text('Show Multi-Order Route'),
+        icon: Icon(Icons.route),
+      ),
 
-        return orderController.completedOrderList != null ? orderController.completedOrderList!.isNotEmpty ? RefreshIndicator(
+      body: GetBuilder<OrderController>(builder: (orderController) {
+        return orderController.currentOrderList != null ? orderController.currentOrderList!.isNotEmpty ? RefreshIndicator(
           onRefresh: () async {
-            await orderController.getCompletedOrders(1);
+            await orderController.getCurrentOrders();
           },
           child: SingleChildScrollView(
             controller: scrollController,
@@ -55,17 +81,13 @@ class _OrderScreenState extends State<OrderScreen> {
               child: Column(children: [
                 ListView.builder(
                   padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                  itemCount: orderController.completedOrderList!.length,
+                  itemCount: orderController.currentOrderList!.length,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return HistoryOrderWidget(orderModel: orderController.completedOrderList![index], isRunning: false, index: index);
+                    return HistoryOrderWidget(orderModel: orderController.currentOrderList![index], isRunning: true, index: index);
                   },
                 ),
-                orderController.paginate ? const Center(child: Padding(
-                  padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
-                  child: CircularProgressIndicator(),
-                )) : const SizedBox(),
               ]),
             )),
           ),

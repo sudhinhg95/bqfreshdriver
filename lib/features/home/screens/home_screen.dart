@@ -304,11 +304,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       ) : const SizedBox(),
                       SizedBox(height: hasActiveOrder ? Dimensions.paddingSizeExtraSmall : 0),
 
-                      orderController.currentOrderList == null ? OrderShimmerWidget(
-                        isEnabled: orderController.currentOrderList == null,
-                      ) : orderController.currentOrderList!.isNotEmpty ? OrderWidget(
-                        orderModel: orderController.currentOrderList![0], isRunningOrder: true, orderIndex: 0,
-                      ) : const SizedBox(),
+                      orderController.currentOrderList == null
+                        ? OrderShimmerWidget(isEnabled: orderController.currentOrderList == null)
+                        : orderController.currentOrderList!.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: orderController.currentOrderList!.length,
+                              itemBuilder: (context, index) {
+                                return OrderWidget(
+                                  orderModel: orderController.currentOrderList![index],
+                                  isRunningOrder: true,
+                                  orderIndex: index,
+                                );
+                              },
+                            )
+                          : const SizedBox(),
                       SizedBox(height: hasActiveOrder ? Dimensions.paddingSizeDefault : 0),
 
                     ]);

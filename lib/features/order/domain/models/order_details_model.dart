@@ -40,9 +40,9 @@ class OrderDetailsModel {
   });
 
   OrderDetailsModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    itemId = json['item_id'];
-    orderId = json['order_id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
+    itemId = json['item_id'] != null ? int.tryParse(json['item_id'].toString()) : null;
+    orderId = json['order_id'] != null ? int.tryParse(json['order_id'].toString()) : null;
     price = json['price']?.toDouble();
     itemDetails = json['item_details'] != null ? ItemDetails.fromJson(json['item_details']) : null;
     variation = [];
@@ -66,14 +66,14 @@ class OrderDetailsModel {
     }
     discountOnItem = json['discount_on_item']?.toDouble();
     discountType = json['discount_type'];
-    quantity = json['quantity'];
+    quantity = json['quantity'] != null ? int.tryParse(json['quantity'].toString()) : null;
     taxAmount = json['tax_amount']?.toDouble();
     variant = json['variant'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    itemCampaignId = json['item_campaign_id'];
+    itemCampaignId = json['item_campaign_id'] != null ? int.tryParse(json['item_campaign_id'].toString()) : null;
     totalAddOnPrice = json['total_add_on_price']?.toDouble();
-    vendorId = json['vendor_id'];
+    vendorId = json['vendor_id'] != null ? int.tryParse(json['vendor_id'].toString()) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -117,7 +117,7 @@ class AddOn {
   AddOn.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     price = json['price']?.toDouble();
-    quantity = json['quantity'];
+    quantity = json['quantity'] != null ? int.tryParse(json['quantity'].toString()) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -187,7 +187,7 @@ class ItemDetails {
   });
 
   ItemDetails.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
     name = json['name'];
     description = json['description'];
     imageFullUrl = json['image_full_url'];
@@ -227,7 +227,7 @@ class ItemDetails {
     discountType = json['discount_type'];
     availableTimeStarts = json['available_time_starts'];
     availableTimeEnds = json['available_time_ends'];
-    storeId = json['store_id'];
+    storeId = json['store_id'] != null ? int.tryParse(json['store_id'].toString()) : null;
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     storeName = json['store_name'];
@@ -235,7 +235,7 @@ class ItemDetails {
     avgRating = json['avg_rating']?.toDouble();
     veg = json['veg'] != null ? int.parse(json['veg'].toString()) : 0;
     unitType = json['unit_type'];
-    ratingCount = json['rating_count'];
+    ratingCount = json['rating_count'] != null ? int.tryParse(json['rating_count'].toString()) : null;
     moduleType = json['module_type'];
   }
 

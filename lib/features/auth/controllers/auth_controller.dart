@@ -10,6 +10,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sixam_mart_delivery/features/auth/domain/services/auth_service_interface.dart';
 
 class AuthController extends GetxController implements GetxService {
+    void resetLoading() {
+      _isLoading = false;
+      update();
+    }
   final AuthServiceInterface authServiceInterface;
   AuthController({required this.authServiceInterface}){
     _notification = authServiceInterface.isNotificationActive();

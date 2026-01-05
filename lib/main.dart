@@ -42,7 +42,25 @@ Future<void> main() async {
   //   await Firebase.initializeApp();
   // }
 
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
+
+    if (GetPlatform.isWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyDFN-73p8zKVZbA0i5DtO215XzAb-xuGSE",
+        authDomain: "ammart-8885e.firebaseapp.com",
+        databaseURL: "https://ammart-8885e-default-rtdb.firebaseio.com",
+        projectId: "ammart-8885e",
+        storageBucket: "ammart-8885e.appspot.com",
+        messagingSenderId: "1000163153346",
+        appId: "1:1000163153346:web:4f702a4b5adbd5c906b25b",
+        measurementId: "G-L1GNL2YV61",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
 
   Map<String, Map<String, String>> languages = await di.init();
 

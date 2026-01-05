@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "953525192803",
-    "project_id": "bq-fresh-driver",
-    "storage_bucket": "bq-fresh-driver.firebasestorage.app"
+    "project_number": "548787113722",
+    "project_id": "bqfresh-68d58",
+    "storage_bucket": "bqfresh-68d58.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:953525192803:android:af32e150aaeb4c2ac21056",
+        "mobilesdk_app_id": "1:548787113722:android:aff638b913dea0f68c4343",
         "android_client_info": {
           "package_name": "com.app.bqfreshdriver"
         }
@@ -15,7 +15,45 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDqlHBv_ujRedFeadsYaM64zmKohE5L5rA"
+          "current_key": "AIzaSyDz-ZUHRagUsYM-9Ykgc66OvzlT0lPdcY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548787113722:android:ee53330b19ba2be18c4343",
+        "android_client_info": {
+          "package_name": "com.app.bqfreshvendor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDz-ZUHRagUsYM-9Ykgc66OvzlT0lPdcY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548787113722:android:d89057ccfdaf18528c4343",
+        "android_client_info": {
+          "package_name": "com.bqfresh.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDz-ZUHRagUsYM-9Ykgc66OvzlT0lPdcY0"
         }
       ],
       "services": {

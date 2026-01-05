@@ -105,6 +105,7 @@
   "yes": "Sí",
   "no_order_found": "No se encontró ningún pedido",
   "my_orders": "Mis pedidos",
+  "delivered_orders": "Pedidos Entregados",
   "order_amount": "Monto del pedido",
   "invalid_phone_number_found": "Número de teléfono no válido encontrado",
   "could_not_launch": "No se pudo iniciar",

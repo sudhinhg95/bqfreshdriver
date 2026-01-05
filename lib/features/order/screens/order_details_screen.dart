@@ -58,9 +58,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
   }
 
   Future<void> _loadData() async {
+    debugPrint('[OrderDetailsScreen] _loadData called for orderId: ' + widget.orderId.toString());
     Get.find<OrderController>().pickPrescriptionImage(isRemove: true, isCamera: false);
     await Get.find<OrderController>().getOrderWithId(widget.orderId);
-    Get.find<OrderController>().getOrderDetails(widget.orderId, Get.find<OrderController>().orderModel!.orderType == 'parcel');
+    debugPrint('[OrderDetailsScreen] getOrderWithId finished for orderId: ' + widget.orderId.toString());
+    if(Get.find<OrderController>().orderModel != null) {
+      Get.find<OrderController>().getOrderDetails(widget.orderId, Get.find<OrderController>().orderModel!.orderType == 'parcel');
+    } else {
+      debugPrint('[OrderDetailsScreen] orderModel is null after getOrderWithId for orderId: ' + widget.orderId.toString());
+    }
     await Get.find<OrderController>().getLatestOrders();
     if(Get.find<OrderController>().showDeliveryImageField){
       Get.find<OrderController>().changeDeliveryImageStatus(isUpdate: false);
@@ -126,7 +132,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
               bool restConfModel = Get.find<SplashController>().configModel!.orderConfirmationModel != 'deliveryman';
 
-              bool? parcel, processing, accepted, confirmed, handover, pickedUp, cod, wallet, partialPay, offlinePay;
+                bool parcel = false, processing = false, accepted = false, confirmed = false, handover = false,
+                  pickedUp = false, cod = false, wallet = false, partialPay = false, offlinePay = false;
               
               bool orderVerificationActive = Get.find<SplashController>().configModel?.orderDeliveryVerification ?? false;
 
@@ -145,29 +152,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
               double extraPackagingAmount = 0;
               double referrerBonusAmount = 0;
               bool? isPrescriptionOrder = false;
-              bool? taxIncluded = false;
+              bool taxIncluded = false;
               bool showChatPermission = true;
               OrderModel? order = controllerOrderModel;
               if(order != null && orderController.orderDetailsModel != null) {
-                deliveryCharge = order.deliveryCharge;
-                dmTips = order.dmTips;
-                isPrescriptionOrder = order.prescriptionOrder;
-                discount = order.storeDiscountAmount! + order.flashAdminDiscountAmount! + order.flashStoreDiscountAmount!;
-                tax = order.totalTaxAmount;
-                taxIncluded = order.taxStatus;
-                additionalCharge = order.additionalCharge!;
-                extraPackagingAmount = order.extraPackagingAmount!;
-                referrerBonusAmount = order.referrerBonusAmount!;
-                couponDiscount = order.couponDiscountAmount;
-                if(isPrescriptionOrder!){
+                deliveryCharge = (order.deliveryCharge ?? 0);
+                dmTips = (order.dmTips ?? 0);
+                isPrescriptionOrder = (order.prescriptionOrder ?? false);
+                discount = (order.storeDiscountAmount ?? 0) + (order.flashAdminDiscountAmount ?? 0) + (order.flashStoreDiscountAmount ?? 0);
+                tax = (order.totalTaxAmount ?? 0);
+                taxIncluded = (order.taxStatus ?? false);
+                additionalCharge = (order.additionalCharge ?? 0);
+                extraPackagingAmount = (order.extraPackagingAmount ?? 0);
+                referrerBonusAmount = (order.referrerBonusAmount ?? 0);
+                couponDiscount = (order.couponDiscountAmount ?? 0);
+                if(isPrescriptionOrder == true){
                   double orderAmount = order.orderAmount ?? 0;
-                  itemsPrice = (orderAmount + discount) - ((taxIncluded! ? 0 : tax!) + deliveryCharge! + additionalCharge) - dmTips!;
+                  itemsPrice = (orderAmount + (discount ?? 0)) - (((taxIncluded == true) ? 0 : (tax ?? 0)) + (deliveryCharge ?? 0) + (additionalCharge)) - (dmTips ?? 0);
                 }else {
                   for (OrderDetailsModel orderDetails in orderController.orderDetailsModel!) {
                     for (AddOn addOn in orderDetails.addOns!) {
-                      addOns = addOns + (addOn.price! * addOn.quantity!);
+                      addOns = addOns + ((addOn.price ?? 0) * (addOn.quantity ?? 0));
                     }
-                    itemsPrice = itemsPrice + (orderDetails.price! * orderDetails.quantity!);
+                    itemsPrice = itemsPrice + ((orderDetails.price ?? 0) * (orderDetails.quantity ?? 0));
                   }
                 }
 
@@ -180,7 +187,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 }
               }
               double subTotal = itemsPrice + addOns;
-              double total = itemsPrice + addOns - discount+ (taxIncluded! ? 0 : tax!) + deliveryCharge! - couponDiscount! + dmTips! + additionalCharge + extraPackagingAmount - referrerBonusAmount;
+              double total = itemsPrice + addOns - (discount ?? 0) + ((taxIncluded == true) ? 0 : (tax ?? 0)) + (deliveryCharge ?? 0) - (couponDiscount ?? 0) + (dmTips ?? 0) + (additionalCharge) + (extraPackagingAmount) - (referrerBonusAmount);
 
               if(controllerOrderModel != null){
                 parcel = controllerOrderModel.orderType == 'parcel';
@@ -209,7 +216,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   child: Column(children: [
 
                     Row(children: [
-                      Text('${parcel! ? 'delivery_id'.tr : 'order_id'.tr}:', style: robotoRegular),
+                      Text('${(parcel == true) ? 'delivery_id'.tr : 'order_id'.tr}:', style: robotoRegular),
                       const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                       Text(controllerOrderModel.id.toString(), style: robotoMedium),
                       const SizedBox(width: Dimensions.paddingSizeExtraSmall),
@@ -217,14 +224,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       Container(height: 7, width: 7, decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.green)),
                       const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                       Text(
-                        controllerOrderModel.orderStatus!.tr,
+                        (controllerOrderModel.orderStatus ?? '').tr,
                         style: robotoRegular,
                       ),
                     ]),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
 
                     Row(children: [
-                      Text('${parcel ? 'charge_payer'.tr : 'item'.tr}:', style: robotoRegular),
+                      Text('${(parcel == true) ? 'charge_payer'.tr : 'item'.tr}:', style: robotoRegular),
                       const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                       Text(
                         parcel ? controllerOrderModel.chargePayer!.tr : orderController.orderDetailsModel!.length.toString(),
@@ -235,7 +242,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                         padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
                         decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity( 0.1), borderRadius: BorderRadius.circular(5)),
                         child: Text(
-                          cod! ? 'cod'.tr : wallet! ? 'wallet'.tr : partialPay! ? 'partially_pay'.tr : offlinePay! ? 'offline_payment'.tr : 'digitally_paid'.tr,
+                          (cod == true) ? 'cod'.tr : (wallet == true) ? 'wallet'.tr : (partialPay == true) ? 'partially_pay'.tr : (offlinePay == true) ? 'offline_payment'.tr : 'digitally_paid'.tr,
                           style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
                         ),
                       ),
@@ -250,7 +257,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                         const Expanded(child: SizedBox()),
 
                         Text(
-                          controllerOrderModel.cutlery! ? 'yes'.tr : 'no'.tr,
+                          (controllerOrderModel.cutlery == true) ? 'yes'.tr : 'no'.tr,
                           style: robotoRegular,
                         ),
                       ]),
@@ -295,22 +302,28 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       title: parcel ? 'sender_details'.tr : 'store_details'.tr,
                       address: parcel ? controllerOrderModel.deliveryAddress : DeliveryAddress(address: controllerOrderModel.storeAddress),
                       image: parcel ? '' : '${controllerOrderModel.storeLogoFullUrl}',
-                      name: parcel ? controllerOrderModel.deliveryAddress!.contactPersonName : controllerOrderModel.storeName,
-                      phone: parcel ? controllerOrderModel.deliveryAddress!.contactPersonNumber : controllerOrderModel.storePhone,
-                      latitude: parcel ? controllerOrderModel.deliveryAddress!.latitude : controllerOrderModel.storeLat,
-                      longitude: parcel ? controllerOrderModel.deliveryAddress!.longitude : controllerOrderModel.storeLng,
+                      name: parcel ? (controllerOrderModel.deliveryAddress?.contactPersonName ?? '') : controllerOrderModel.storeName,
+                      phone: parcel ? (controllerOrderModel.deliveryAddress?.contactPersonNumber ?? '') : controllerOrderModel.storePhone,
+                      latitude: parcel ? controllerOrderModel.deliveryAddress?.latitude : controllerOrderModel.storeLat,
+                      longitude: parcel ? controllerOrderModel.deliveryAddress?.longitude : controllerOrderModel.storeLng,
                       showButton: (controllerOrderModel.orderStatus != 'delivered' && controllerOrderModel.orderStatus != 'failed'
                           && controllerOrderModel.orderStatus != 'canceled' && controllerOrderModel.orderStatus != 'refunded'),
                       isStore: parcel ? false : true, isChatAllow: showChatPermission,
-                      messageOnTap: () => Get.toNamed(RouteHelper.getChatRoute(
-                        notificationBody: NotificationBodyModel(
-                          orderId: controllerOrderModel.id, vendorId: orderController.orderDetailsModel![0].vendorId,
-                        ),
-                        user: User(
-                          id: controllerOrderModel.storeId, fName: controllerOrderModel.storeName,
-                          imageFullUrl: controllerOrderModel.storeLogoFullUrl,
-                        ),
-                      )),
+                      messageOnTap: () {
+                        if(orderController.orderDetailsModel != null && orderController.orderDetailsModel!.isNotEmpty) {
+                          Get.toNamed(RouteHelper.getChatRoute(
+                            notificationBody: NotificationBodyModel(
+                              orderId: controllerOrderModel.id, vendorId: orderController.orderDetailsModel![0].vendorId,
+                            ),
+                            user: User(
+                              id: controllerOrderModel.storeId, fName: controllerOrderModel.storeName,
+                              imageFullUrl: controllerOrderModel.storeLogoFullUrl,
+                            ),
+                          ));
+                        } else {
+                          showCustomSnackBar('Order details not loaded yet', isError: true);
+                        }
+                      },
                       order: order!,
                     ),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -319,22 +332,28 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       title: parcel ? 'receiver_details'.tr : 'customer_contact_details'.tr,
                       address: parcel ? controllerOrderModel.receiverDetails : controllerOrderModel.deliveryAddress,
                       image: parcel ? '' : controllerOrderModel.customer != null ? '${controllerOrderModel.customer!.imageFullUrl}' : '',
-                      name: parcel ? controllerOrderModel.receiverDetails!.contactPersonName : controllerOrderModel.deliveryAddress!.contactPersonName,
-                      phone: parcel ? controllerOrderModel.receiverDetails!.contactPersonNumber : controllerOrderModel.deliveryAddress!.contactPersonNumber,
-                      latitude: parcel ? controllerOrderModel.receiverDetails!.latitude : controllerOrderModel.deliveryAddress!.latitude,
-                      longitude: parcel ? controllerOrderModel.receiverDetails!.longitude : controllerOrderModel.deliveryAddress!.longitude,
+                      name: parcel ? (controllerOrderModel.receiverDetails?.contactPersonName ?? '') : (controllerOrderModel.deliveryAddress?.contactPersonName ?? ''),
+                      phone: parcel ? (controllerOrderModel.receiverDetails?.contactPersonNumber ?? '') : (controllerOrderModel.deliveryAddress?.contactPersonNumber ?? ''),
+                      latitude: parcel ? controllerOrderModel.receiverDetails?.latitude : controllerOrderModel.deliveryAddress?.latitude,
+                      longitude: parcel ? controllerOrderModel.receiverDetails?.longitude : controllerOrderModel.deliveryAddress?.longitude,
                       showButton: controllerOrderModel.orderStatus != 'delivered' && controllerOrderModel.orderStatus != 'failed'
                           && controllerOrderModel.orderStatus != 'canceled' && controllerOrderModel.orderStatus != 'refunded',
                       isStore: parcel ? false : true, isChatAllow: showChatPermission,
-                      messageOnTap: () => Get.toNamed(RouteHelper.getChatRoute(
-                        notificationBody: NotificationBodyModel(
-                          orderId: controllerOrderModel.id, customerId: controllerOrderModel.customer!.id,
-                        ),
-                        user: User(
-                          id: controllerOrderModel.customer!.id, fName: controllerOrderModel.customer!.fName,
-                          lName: controllerOrderModel.customer!.lName, imageFullUrl: controllerOrderModel.customer!.imageFullUrl,
-                        ),
-                      )),
+                      messageOnTap: () {
+                        if(controllerOrderModel.customer != null) {
+                          Get.toNamed(RouteHelper.getChatRoute(
+                            notificationBody: NotificationBodyModel(
+                              orderId: controllerOrderModel.id, customerId: controllerOrderModel.customer!.id,
+                            ),
+                            user: User(
+                              id: controllerOrderModel.customer!.id, fName: controllerOrderModel.customer!.fName,
+                              lName: controllerOrderModel.customer!.lName, imageFullUrl: controllerOrderModel.customer!.imageFullUrl,
+                            ),
+                          ));
+                        } else {
+                          showCustomSnackBar('Customer info not available', isError: true);
+                        }
+                      },
                       order: order,
                     ),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -481,7 +500,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     ]) : const SizedBox(),
                     SizedBox(height: !parcel ? 10 : 0),
 
-                    Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Row(
+                    (Get.find<SplashController>().getModuleConfig(order.moduleType).addOn == true) ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('addons'.tr, style: robotoRegular),
@@ -489,18 +508,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       ],
                     ) : const SizedBox(),
 
-                    Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Divider(
+                    (Get.find<SplashController>().getModuleConfig(order.moduleType).addOn == true) ? Divider(
                       thickness: 1, color: Theme.of(context).hintColor.withOpacity( 0.5),
                     ) : const SizedBox(),
 
-                    Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Row(
+                    (Get.find<SplashController>().getModuleConfig(order.moduleType).addOn == true) ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('subtotal'.tr, style: robotoMedium),
                         Text(PriceConverterHelper.convertPrice(subTotal), style: robotoMedium),
                       ],
                     ) : const SizedBox(),
-                    SizedBox(height: Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? 10 : 0),
+                    SizedBox(height: (Get.find<SplashController>().getModuleConfig(order.moduleType).addOn == true) ? 10 : 0),
 
                     !parcel ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text('discount'.tr, style: robotoRegular),
@@ -568,7 +587,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       child: Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity( 0.5)),
                     ),
 
-                    partialPay! ? DottedBorder(
+                    partialPay ? DottedBorder(
                       color: Theme.of(context).primaryColor,
                       strokeWidth: 1,
                       strokeCap: StrokeCap.butt,
@@ -595,16 +614,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                             Text('paid_by_wallet'.tr, style: !restConfModel ? robotoMedium : robotoRegular),
                             Text(
-                              PriceConverterHelper.convertPrice(order.payments![0].amount),
+                              PriceConverterHelper.convertPrice((order.payments != null && order.payments!.isNotEmpty && order.payments![0].amount != null) ? order.payments![0].amount! : 0),
                               style: !restConfModel ? robotoMedium : robotoRegular,
                             ),
                           ]),
                           const SizedBox(height: 10),
 
                           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            Text('${order.payments?[1].paymentStatus == 'paid' ? 'paid_by'.tr : 'due_amount'.tr} (${order.payments![1].paymentMethod?.tr})', style: !restConfModel ? robotoMedium : robotoRegular),
+                            Text('${(order.payments != null && order.payments!.length > 1 && order.payments![1].paymentStatus == 'paid') ? 'paid_by'.tr : 'due_amount'.tr} (${order.payments != null && order.payments!.length > 1 ? (order.payments![1].paymentMethod?.tr ?? '') : ''})', style: !restConfModel ? robotoMedium : robotoRegular),
                             Text(
-                              PriceConverterHelper.convertPrice(order.payments![1].amount),
+                              PriceConverterHelper.convertPrice((order.payments != null && order.payments!.length > 1 && order.payments![1].amount != null) ? order.payments![1].amount! : 0),
                               style: !restConfModel ? robotoMedium : robotoRegular,
                             ),
                           ]),
@@ -700,23 +719,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
                       Get.bottomSheet(VerifyDeliverySheetWidget(
                         currentOrderModel: controllerOrderModel, verify: orderVerificationActive,
-                        orderAmount: partialPay! ? controllerOrderModel.payments![1].amount!.toDouble() : controllerOrderModel.orderAmount,
-                        cod: cod! || (partialPay && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'),
+                        orderAmount: (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].amount != null)
+                          ? controllerOrderModel.payments![1].amount!.toDouble()
+                          : (controllerOrderModel.orderAmount ?? 0),
+                        cod: (cod == true) || (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'),
                       ), isScrollControlled: true).then((isSuccess) {
 
-                        if(isSuccess && (cod! || (partialPay! && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'))){
+                        if(isSuccess && ((cod == true) || (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'))){
                           Get.bottomSheet(CollectMoneyDeliverySheetWidget(
                             currentOrderModel: controllerOrderModel, verify: orderVerificationActive,
-                            orderAmount: partialPay! ? controllerOrderModel.payments![1].amount!.toDouble() : controllerOrderModel.orderAmount,
-                            cod: cod || (partialPay && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'),
+                            orderAmount: (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].amount != null)
+                              ? controllerOrderModel.payments![1].amount!.toDouble()
+                              : (controllerOrderModel.orderAmount ?? 0),
+                            cod: (cod == true) || (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'),
                           ), isScrollControlled: true, isDismissible: false);
                         }
                       });
                     } else{
                       Get.bottomSheet(CollectMoneyDeliverySheetWidget(
                         currentOrderModel: controllerOrderModel, verify: orderVerificationActive,
-                        orderAmount: partialPay! ? controllerOrderModel.payments![1].amount!.toDouble() : controllerOrderModel.orderAmount,
-                        cod: cod! || (partialPay && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'),
+                        orderAmount: (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].amount != null)
+                          ? controllerOrderModel.payments![1].amount!.toDouble()
+                          : (controllerOrderModel.orderAmount ?? 0),
+                        cod: (cod == true) || (partialPay == true && controllerOrderModel.payments != null && controllerOrderModel.payments!.length > 1 && controllerOrderModel.payments![1].paymentMethod == 'cash_on_delivery'),
                       ), isScrollControlled: true);
                     }
 
@@ -760,18 +785,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     onPressed: () {
                       Get.dialog(ConfirmationDialogWidget(
                         icon: Images.warning, title: 'are_you_sure_to_confirm'.tr,
-                        description: parcel! ? 'you_want_to_confirm_this_delivery'.tr : 'you_want_to_confirm_this_order'.tr,
+                        description: parcel ? 'you_want_to_confirm_this_delivery'.tr : 'you_want_to_confirm_this_order'.tr,
                         onYesPressed: () {
-                          if((orderVerificationActive || cod!) && !parcel!) {
+                          if((orderVerificationActive || cod) && !parcel) {
                             orderController.updateOrderStatus(
                               controllerOrderModel, parcel ? AppConstants.handover : AppConstants.confirmed, back: widget.fromLocationScreen? false: true,
                               gotoDashboard: widget.fromLocationScreen? true: false,
                             );
                           }
-                          else if(parcel! && cod! && controllerOrderModel.chargePayer != 'sender') {
+                          else if(parcel && cod && controllerOrderModel.chargePayer != 'sender') {
                             orderController.updateOrderStatus(controllerOrderModel, AppConstants.handover);
                           }
-                          else if(parcel && controllerOrderModel.chargePayer == 'sender' && cod!) {
+                          else if(parcel && controllerOrderModel.chargePayer == 'sender' && cod) {
                             orderController.updateOrderStatus(controllerOrderModel, AppConstants.handover);
                           }
                         },
@@ -782,22 +807,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 ]) : SliderButton(
                   action: () {
 
-                    if((cod! && accepted! && !restConfModel && !selfDelivery) || (parcel! && accepted!)) {
+                    if((cod && accepted && !restConfModel && !selfDelivery) || (parcel && accepted)) {
 
                       if(orderController.isLoading) {
                         orderController.initLoading();
                       }
                       Get.dialog(ConfirmationDialogWidget(
                         icon: Images.warning, title: 'are_you_sure_to_confirm'.tr,
-                        description: parcel! ? 'you_want_to_confirm_this_delivery'.tr : 'you_want_to_confirm_this_order'.tr,
+                        description: parcel ? 'you_want_to_confirm_this_delivery'.tr : 'you_want_to_confirm_this_order'.tr,
                         onYesPressed: () {
                           orderController.updateOrderStatus(
-                            controllerOrderModel, parcel! ? AppConstants.handover : AppConstants.confirmed, back: widget.fromLocationScreen? false: true,
+                            controllerOrderModel, parcel ? AppConstants.handover : AppConstants.confirmed, back: widget.fromLocationScreen? false: true,
                             gotoDashboard: widget.fromLocationScreen? true: false
                           );
                         },
                       ), barrierDismissible: false);
-                    } else if(handover!){
+                    } else if(handover){
                       if(parcel && controllerOrderModel.chargePayer == 'sender' && cod){
                         Get.bottomSheet(VerifyDeliverySheetWidget(
                           currentOrderModel: controllerOrderModel, verify: false, isSetOtp: false,
@@ -811,7 +836,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                           showCustomSnackBar('make_yourself_online_first'.tr);
                         }
                       }
-                    } else if(parcel && pickedUp!){
+                    } else if(parcel && pickedUp){
                       if(orderVerificationActive && controllerOrderModel.chargePayer != 'sender' && cod) {
                         Get.bottomSheet(VerifyDeliverySheetWidget(
                           currentOrderModel: controllerOrderModel, verify: orderVerificationActive,
@@ -845,7 +870,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                         Get.find<OrderController>().updateOrderStatus(controllerOrderModel, AppConstants.delivered, back: widget.fromLocationScreen? false: true,
                         gotoDashboard: widget.fromLocationScreen? true: false);
                       }
-                    }else if(!parcel && pickedUp!){
+                    }else if(!parcel && pickedUp){
                       if(orderVerificationActive || cod){
                         Get.bottomSheet(VerifyDeliverySheetWidget(
                           currentOrderModel: controllerOrderModel, verify: orderVerificationActive,
@@ -917,9 +942,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   label: Text(
                     (parcel && accepted) ? 'swipe_to_confirm_delivery'.tr
                         : (cod && accepted && !restConfModel && !selfDelivery) ? 'swipe_to_confirm_order'.tr
-                        : pickedUp! ? parcel ? 'swipe_to_deliver_parcel'.tr
-                        : 'swipe_to_deliver_order'.tr : handover! ? parcel ? 'swipe_to_pick_up_parcel'.tr
-                        : 'swipe_to_pick_up_order'.tr : '',
+                        : pickedUp ? (parcel ? 'swipe_to_deliver_parcel'.tr : 'swipe_to_deliver_order'.tr)
+                        : handover ? (parcel ? 'swipe_to_pick_up_parcel'.tr : 'swipe_to_pick_up_order'.tr) : '',
                     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
                   ),
                   dismissThresholds: 0.5, dismissible: false, shimmer: true,

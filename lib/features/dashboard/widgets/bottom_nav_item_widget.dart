@@ -16,26 +16,7 @@ class BottomNavItemWidget extends StatelessWidget {
     return Expanded(
       child: IconButton(
         onPressed: onTap as void Function()?,
-        icon: Stack(clipBehavior: Clip.none, children: [
-          Icon(iconData, color: isSelected ? Theme.of(context).primaryColor : Colors.grey, size: 25),
-
-          pageIndex == 1 ? Positioned(
-            top: -5, right: -5,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-              ),
-              child: GetBuilder<OrderController>(builder: (orderController) {
-                return Text(
-                  orderController.latestOrderList?.length.toString() ?? '0',
-                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Colors.white),
-                );
-              }),
-            ),
-          ) : const SizedBox(),
-        ]),
+        icon: Icon(iconData, color: isSelected ? Theme.of(context).primaryColor : Colors.grey, size: 25),
       ),
     );
   }

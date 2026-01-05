@@ -105,6 +105,7 @@
   "yes": "نعم",
   "no_order_found": "لم يتم العثور على أي أمر",
   "my_orders": "طلباتي",
+  "delivered_orders": "الطلبات المسلّمة",
   "order_amount": "مبلغ الطلب",
   "invalid_phone_number_found": "تم العثور على رقم هاتف غير صالح",
   "could_not_launch": "لا يمكن إطلاق",

@@ -15,6 +15,7 @@ import 'package:sixam_mart_delivery/features/home/screens/home_screen.dart';
 import 'package:sixam_mart_delivery/features/profile/screens/profile_screen.dart';
 import 'package:sixam_mart_delivery/features/order/screens/order_request_screen.dart';
 import 'package:sixam_mart_delivery/features/order/screens/order_screen.dart';
+import 'package:sixam_mart_delivery/features/order/screens/delivered_orders_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,12 +48,12 @@ class DashboardScreenState extends State<DashboardScreen> {
 
     _screens = [
       const HomeScreen(),
-      OrderRequestScreen(onTap: () => _setPage(0)),
-      const OrderScreen(),
+      const OrderScreen(), // current/running orders
+      const DeliveredOrdersScreen(), // delivered/completed orders
       const ProfileScreen(),
     ];
 
-    showDisbursementWarningMessage();
+    // showDisbursementWarningMessage(); // Disabled: Hide performance warning message
     Get.find<OrderController>().getLatestOrders();
     
     _stream = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -151,9 +152,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
             child: Row(children: [
               BottomNavItemWidget(iconData: Icons.home, isSelected: _pageIndex == 0, onTap: () => _setPage(0)),
-              BottomNavItemWidget(iconData: Icons.list_alt_rounded, isSelected: _pageIndex == 1, pageIndex: 1, onTap: () {
-                _navigateRequestPage();
-              }),
+              BottomNavItemWidget(iconData: Icons.list_alt_rounded, isSelected: _pageIndex == 1, pageIndex: 1, onTap: () => _setPage(1)),
               BottomNavItemWidget(iconData: Icons.shopping_bag, isSelected: _pageIndex == 2, onTap: () => _setPage(2)),
               BottomNavItemWidget(iconData: Icons.person, isSelected: _pageIndex == 3, onTap: () => _setPage(3)),
             ]),

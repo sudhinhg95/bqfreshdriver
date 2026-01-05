@@ -32,6 +32,13 @@ android {
     namespace "com.app.bqfreshdriver"
     compileSdk 35
 
+    packagingOptions {
+        jniLibs {
+            // Ensure native libraries are not legacy packaged (kept uncompressed in bundle)
+            useLegacyPackaging false
+        }
+    }
+
     compileOptions {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
@@ -52,6 +59,9 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86_64" // include 64-bit
+        }
     }
 
     signingConfigs {
@@ -79,4 +89,5 @@ flutter {
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
     implementation "com.google.firebase:firebase-messaging:23.4.1"
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 }

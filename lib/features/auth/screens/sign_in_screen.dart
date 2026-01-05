@@ -171,18 +171,35 @@ class _SignInScreenState extends State<SignInScreen> {
     }else if (password.length < 6) {
       showCustomSnackBar('password_should_be'.tr);
     }else {
+      bool finished = false;
+      Future timeout = Future.delayed(const Duration(seconds: 15), () {
+        if (!finished) {
+          debugPrint('Login fallback timeout triggered');
+          authController.resetLoading();
+          showCustomSnackBar('Login timeout, please try again.');
+        }
+      });
+      debugPrint('Attempting login for $numberWithCountryCode');
       authController.login(numberWithCountryCode, password).then((status) async {
+        finished = true;
+        debugPrint('Login status: success=${status.isSuccess}, message=${status.message}');
         if (status.isSuccess) {
           if (authController.isActiveRememberMe) {
             authController.saveUserNumberAndPassword(phone, password, countryDialCode, countryCode);
           } else {
             authController.clearUserNumberAndPassword();
           }
-          await Get.find<ProfileController>().getProfile();
-          Get.offAllNamed(RouteHelper.getInitialRoute());
-        }else {
+          // Redirect to dashboard/home after successful login
+          Get.offAllNamed(RouteHelper.getMainRoute('home'));
+        } else {
           showCustomSnackBar(status.message);
         }
+        authController.resetLoading();
+      }).catchError((e) {
+        finished = true;
+        debugPrint('Login error: $e');
+        authController.resetLoading();
+        showCustomSnackBar('Login failed. Please try again.');
       });
     }
   }
