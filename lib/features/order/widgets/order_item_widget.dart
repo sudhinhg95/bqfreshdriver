@@ -71,7 +71,11 @@ class OrderItemWidget extends StatelessWidget {
               Text('${'quantity'.tr}:', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
 
               Text(
-                orderDetails.quantity.toString(),
+                orderDetails.quantity != null
+                    ? (orderDetails.quantity! % 1 == 0
+                        ? orderDetails.quantity!.toInt().toString()
+                        : orderDetails.quantity!.toString())
+                    : '-',
                 style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
               ),
 

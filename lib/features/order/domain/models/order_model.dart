@@ -290,6 +290,8 @@ class DeliveryAddress {
   String? updatedAt;
   int? zoneId;
   String? streetNumber;
+  String? blockNumber;
+  String? area;
   String? house;
   String? floor;
 
@@ -306,6 +308,8 @@ class DeliveryAddress {
     this.updatedAt,
     this.zoneId,
     this.streetNumber,
+    this.blockNumber,
+    this.area,
     this.house,
     this.floor,
   });
@@ -323,6 +327,8 @@ class DeliveryAddress {
     updatedAt = json['updated_at'];
     zoneId = json['zone_id'] != null && json['zone_id'] != 'null' ? int.parse(json['zone_id'].toString()) : null;
     streetNumber = json['road'];
+    blockNumber = json['block_number']?.toString() ?? json['block']?.toString();
+    area = json['area'];
     house = json['house'];
     floor = json['floor'];
   }
@@ -341,6 +347,8 @@ class DeliveryAddress {
     data['updated_at'] = updatedAt;
     data['zone_id'] = zoneId;
     data['road'] = streetNumber;
+    data['block_number'] = blockNumber;
+    data['area'] = area;
     data['house'] = house;
     data['floor'] = floor;
     return data;

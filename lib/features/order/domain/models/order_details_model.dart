@@ -9,7 +9,7 @@ class OrderDetailsModel {
   List<AddOn>? addOns;
   double? discountOnItem;
   String? discountType;
-  int? quantity;
+  double? quantity;
   double? taxAmount;
   String? variant;
   String? createdAt;
@@ -64,9 +64,9 @@ class OrderDetailsModel {
         addOns!.add(AddOn.fromJson(v));
       });
     }
-    discountOnItem = json['discount_on_item']?.toDouble();
+    discountOnItem = json['discount_on_item'] != null ? double.tryParse(json['discount_on_item'].toString()) : null;
     discountType = json['discount_type'];
-    quantity = json['quantity'] != null ? int.tryParse(json['quantity'].toString()) : null;
+    quantity = json['quantity'] != null ? double.tryParse(json['quantity'].toString()) : null;
     taxAmount = json['tax_amount']?.toDouble();
     variant = json['variant'];
     createdAt = json['created_at'];
@@ -110,14 +110,14 @@ class OrderDetailsModel {
 class AddOn {
   String? name;
   double? price;
-  int? quantity;
+  double? quantity;
 
   AddOn({this.name, this.price, this.quantity});
 
   AddOn.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    price = json['price']?.toDouble();
-    quantity = json['quantity'] != null ? int.tryParse(json['quantity'].toString()) : null;
+    price = json['price'] != null ? double.tryParse(json['price'].toString()) : null;
+    quantity = json['quantity'] != null ? double.tryParse(json['quantity'].toString()) : null;
   }
 
   Map<String, dynamic> toJson() {

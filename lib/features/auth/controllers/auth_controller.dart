@@ -85,17 +85,37 @@ class AuthController extends GetxController implements GetxService {
   Future<ResponseModel> login(String phone, String password) async {
     _isLoading = true;
     update();
-    Response response = await authServiceInterface.login(phone, password);
+
     ResponseModel responseModel;
-    if (response.statusCode == 200) {
-      authServiceInterface.saveUserToken(response.body['token'], response.body['zone_topic'], response.body['topic']);
-      await authServiceInterface.updateToken();
-      responseModel = ResponseModel(true, 'successful');
-    } else {
-      responseModel = ResponseModel(false, response.statusText);
+    try {
+      Response response = await authServiceInterface.login(phone, password);
+
+      if (response.statusCode == 200) {
+        // Login succeeded: save token
+        await authServiceInterface.saveUserToken(
+          response.body['token'],
+          response.body['zone_topic'],
+          response.body['topic'],
+        );
+
+        // Updating the FCM/device token should not break login UX
+        try {
+          await authServiceInterface.updateToken();
+        } catch (_) {
+          // Ignore updateToken errors so login can still be treated as successful
+        }
+
+        responseModel = ResponseModel(true, 'successful');
+      } else {
+        responseModel = ResponseModel(false, response.statusText);
+      }
+    } catch (_) {
+      responseModel = ResponseModel(false, 'login_failed');
+    } finally {
+      _isLoading = false;
+      update();
     }
-    _isLoading = false;
-    update();
+
     return responseModel;
   }
 

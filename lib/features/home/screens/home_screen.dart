@@ -268,19 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Column(children: [
 
-          if(!_isNotificationPermissionGranted)
-            permissionWarning(isBatteryPermission: false, onTap: requestNotificationPermission, closeOnTap: () {
-              setState(() {
-                _isNotificationPermissionGranted = true;
-              });
-            }),
-
-          if(!_isBatteryOptimizationGranted)
-            permissionWarning(isBatteryPermission: true, onTap: requestBatteryOptimization, closeOnTap: () {
-              setState(() {
-                _isBatteryOptimizationGranted = true;
-              });
-            }),
+          // Permission warning banners for notification/battery optimization have been disabled
 
           Expanded(
             child: SingleChildScrollView(

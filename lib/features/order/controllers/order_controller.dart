@@ -159,7 +159,12 @@ class OrderController extends GetxController implements GetxService {
           _completedOrderList = [];
         }
         _completedOrderList!.addAll(paginatedOrderModel.orders!);
-        _pageSize = paginatedOrderModel.totalSize;
+        // Limit delivered/completed orders pagination to at most 50 items
+        int totalSize = paginatedOrderModel.totalSize ?? _completedOrderList!.length;
+        if (totalSize > 50) {
+          totalSize = 50;
+        }
+        _pageSize = totalSize;
         _paginate = false;
         update();
       }

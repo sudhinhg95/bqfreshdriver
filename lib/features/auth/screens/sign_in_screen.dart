@@ -118,10 +118,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         horizontalTitleGap: 0,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () => Get.toNamed(RouteHelper.getForgotPassRoute()),
-                      child: Text('${'forgot_password'.tr}?'),
-                    ),
+                    const SizedBox.shrink(),
                   ]),
                   const SizedBox(height: 50),
 
@@ -171,17 +168,9 @@ class _SignInScreenState extends State<SignInScreen> {
     }else if (password.length < 6) {
       showCustomSnackBar('password_should_be'.tr);
     }else {
-      bool finished = false;
-      Future timeout = Future.delayed(const Duration(seconds: 15), () {
-        if (!finished) {
-          debugPrint('Login fallback timeout triggered');
-          authController.resetLoading();
-          showCustomSnackBar('Login timeout, please try again.');
-        }
-      });
       debugPrint('Attempting login for $numberWithCountryCode');
-      authController.login(numberWithCountryCode, password).then((status) async {
-        finished = true;
+      try {
+        final status = await authController.login(numberWithCountryCode, password);
         debugPrint('Login status: success=${status.isSuccess}, message=${status.message}');
         if (status.isSuccess) {
           if (authController.isActiveRememberMe) {
@@ -189,18 +178,16 @@ class _SignInScreenState extends State<SignInScreen> {
           } else {
             authController.clearUserNumberAndPassword();
           }
-          // Redirect to dashboard/home after successful login
           Get.offAllNamed(RouteHelper.getMainRoute('home'));
         } else {
-          showCustomSnackBar(status.message);
+          showCustomSnackBar(status.message ?? 'login_failed'.tr);
         }
-        authController.resetLoading();
-      }).catchError((e) {
-        finished = true;
+      } catch (e) {
         debugPrint('Login error: $e');
+        showCustomSnackBar('login_failed'.tr);
+      } finally {
         authController.resetLoading();
-        showCustomSnackBar('Login failed. Please try again.');
-      });
+      }
     }
   }
 }

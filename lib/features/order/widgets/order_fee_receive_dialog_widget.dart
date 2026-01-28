@@ -22,12 +22,6 @@ class OrderFeeReceiveDialogWidget extends StatelessWidget {
           Image.asset(Images.money, height: 100, width: 100),
           const SizedBox(height: Dimensions.paddingSizeLarge),
 
-          Text(
-            'collect_money_from_customer'.tr, textAlign: TextAlign.center,
-            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
-
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text(
               '${'order_amount'.tr}:', textAlign: TextAlign.center,

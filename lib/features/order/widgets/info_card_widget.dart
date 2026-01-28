@@ -20,22 +20,31 @@ class InfoCardWidget extends StatelessWidget {
   final Function? messageOnTap;
   final OrderModel order;
   final bool isChatAllow;
+  final bool highlight;
   const InfoCardWidget({super.key, required this.title, required this.image, required this.name, required this.address, required this.phone,
-    required this.latitude, required this.longitude, required this.showButton, this.messageOnTap, this.isStore = false, required this.order, required this.isChatAllow});
+    required this.latitude, required this.longitude, required this.showButton, this.messageOnTap, this.isStore = false, required this.order, required this.isChatAllow,
+    this.highlight = false});
 
   @override
   Widget build(BuildContext context) {
+    String addressLine = address?.address ?? '';
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: highlight ? Theme.of(context).primaryColor.withOpacity(0.06) : Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
         boxShadow: Get.isDarkMode ? null : [BoxShadow(color: Colors.grey[200]!, spreadRadius: 1, blurRadius: 5)],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(height: Dimensions.paddingSizeSmall),
 
-        Text(title, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
+        Text(
+          title,
+          style: highlight
+              ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor)
+              : robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+        ),
         const SizedBox(height: Dimensions.paddingSizeSmall),
 
         (name != null && name!.isNotEmpty) ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -48,27 +57,104 @@ class InfoCardWidget extends StatelessWidget {
 
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-            Text(name!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+            Text(
+              name!,
+              style: highlight
+                  ? robotoBold.copyWith(
+                      fontSize: Dimensions.fontSizeLarge,
+                      color: Colors.red,
+                    )
+                  : robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+            ),
             const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
             Text(
-              address!.address ?? '',
-              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor), maxLines: 2, overflow: TextOverflow.ellipsis,
+              addressLine,
+              style: highlight
+                  ? robotoMedium.copyWith(
+                      fontSize: Dimensions.fontSizeSmall,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    )
+                  : robotoRegular.copyWith(
+                      fontSize: Dimensions.fontSizeSmall,
+                      color: Theme.of(context).disabledColor,
+                    ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             SizedBox(height: address!.address != null ? Dimensions.paddingSizeExtraSmall : 0),
 
             Wrap(children: [
-              (address!.streetNumber != null && address!.streetNumber!.isNotEmpty) ? Text('${'street_number'.tr}: ${address!.streetNumber!}, ',
-                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor), maxLines: 1, overflow: TextOverflow.ellipsis,
-              ) : const SizedBox(),
+              // Order: Floor, House, Street, Block, Area
+              (address!.floor != null && address!.floor!.isNotEmpty)
+                  ? Text(
+                      '${'floor'.tr}: ${address!.floor!}, ',
+                      style: (highlight ? robotoMedium : robotoRegular).copyWith(
+                        fontSize: Dimensions.fontSizeExtraSmall,
+                        color: highlight
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context).disabledColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : const SizedBox(),
 
-              (address!.house != null && address!.house!.isNotEmpty) ? Text('${'house'.tr}: ${address!.house!}, ',
-                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor), maxLines: 1, overflow: TextOverflow.ellipsis,
-              ) : const SizedBox(),
+              (address!.house != null && address!.house!.isNotEmpty)
+                  ? Text(
+                      '${'house'.tr}: ${address!.house!}, ',
+                      style: (highlight ? robotoMedium : robotoRegular).copyWith(
+                        fontSize: Dimensions.fontSizeExtraSmall,
+                        color: highlight
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context).disabledColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : const SizedBox(),
 
-              (address!.floor != null && address!.floor!.isNotEmpty) ? Text('${'floor'.tr}: ${address!.floor!}' ,
-                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor), maxLines: 1, overflow: TextOverflow.ellipsis,
-              ) : const SizedBox(),
+              (address!.streetNumber != null && address!.streetNumber!.isNotEmpty)
+                  ? Text(
+                      '${'street_number'.tr}: ${address!.streetNumber!}, ',
+                      style: (highlight ? robotoMedium : robotoRegular).copyWith(
+                        fontSize: Dimensions.fontSizeExtraSmall,
+                        color: highlight
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context).disabledColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : const SizedBox(),
+
+              (address!.blockNumber != null && address!.blockNumber!.isNotEmpty)
+                  ? Text(
+                      'Block: ${address!.blockNumber!}, ',
+                      style: (highlight ? robotoMedium : robotoRegular).copyWith(
+                        fontSize: Dimensions.fontSizeExtraSmall,
+                        color: highlight
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context).disabledColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : const SizedBox(),
+
+              (address!.area != null && address!.area!.isNotEmpty)
+                  ? Text(
+                      'Area: ${address!.area!} ',
+                      style: (highlight ? robotoMedium : robotoRegular).copyWith(
+                        fontSize: Dimensions.fontSizeExtraSmall,
+                        color: highlight
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context).disabledColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : const SizedBox(),
 
             ]),
 
@@ -107,10 +193,21 @@ class InfoCardWidget extends StatelessWidget {
                     throw '${'could_not_launch'.tr} $url';
                   }
                 },
-                icon: Icon(Icons.directions, color: Theme.of(context).disabledColor, size: 20),
+                icon: Icon(
+                  Icons.directions,
+                  color: highlight
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).disabledColor,
+                  size: 20,
+                ),
                 label: Text(
                   'direction'.tr,
-                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                  style: (highlight ? robotoMedium : robotoRegular).copyWith(
+                    fontSize: Dimensions.fontSizeSmall,
+                    color: highlight
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).disabledColor,
+                  ),
                 ),
               ),
 

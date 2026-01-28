@@ -2,7 +2,7 @@ import 'package:sixam_mart_delivery/features/language/domain/models/language_mod
 import 'package:sixam_mart_delivery/util/images.dart';
 
 class AppConstants {
-  static const String appName = 'BQ Fresh Driver';
+  static const String appName = 'BQ Driver';
   static const double appVersion = 3.2; ///Flutter sdk 3.32.5
 
   static const String baseUrl = 'https://admin.bqfresh.com';

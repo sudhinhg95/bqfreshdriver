@@ -44,16 +44,37 @@ class NotificationModel {
 
 class Data {
   String? type;
+  int? orderId;
+  String? customerName;
 
-  Data({this.type});
+  Data({this.type, this.orderId, this.customerName});
 
   Data.fromJson(Map<String, dynamic> json) {
     type = json['type'];
+    if (json.containsKey('order_id')) {
+      final dynamic orderIdValue = json['order_id'];
+      if (orderIdValue is int) {
+        orderId = orderIdValue;
+      } else if (orderIdValue != null) {
+        orderId = int.tryParse(orderIdValue.toString());
+      }
+    }
+    if (json.containsKey('customer_name')) {
+      customerName = json['customer_name']?.toString();
+    } else if (json.containsKey('customer')) {
+      customerName = json['customer']?.toString();
+    }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['type'] = type;
+    if (orderId != null) {
+      data['order_id'] = orderId;
+    }
+    if (customerName != null) {
+      data['customer_name'] = customerName;
+    }
     return data;
   }
 }

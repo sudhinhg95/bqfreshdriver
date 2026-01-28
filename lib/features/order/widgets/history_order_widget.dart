@@ -17,6 +17,32 @@ class HistoryOrderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     bool parcel = orderModel.orderType == 'parcel';
 
+    String subtitleText;
+    if(parcel) {
+      subtitleText = orderModel.parcelCategory != null
+          ? orderModel.parcelCategory!.name!
+          : 'no_parcel_category_data_found'.tr;
+    } else {
+      String customerName = orderModel.deliveryAddress?.contactPersonName ?? '';
+      String blockNumber = orderModel.deliveryAddress?.blockNumber ?? '';
+      String area = orderModel.deliveryAddress?.area ?? orderModel.deliveryAddress?.address ?? '';
+
+      List<String> parts = [];
+      if(customerName.isNotEmpty) {
+        parts.add(customerName);
+      }
+      if(blockNumber.isNotEmpty) {
+        parts.add(blockNumber);
+      }
+      if(area.isNotEmpty) {
+        parts.add(area);
+      }
+
+      subtitleText = parts.isNotEmpty
+          ? parts.join(', ')
+          : (orderModel.storeName ?? 'no_store_data_found'.tr);
+    }
+
     return InkWell(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderDetailsScreen(orderId: orderModel.id, isRunningOrder: isRunning, orderIndex: index))),
       child: Container(
@@ -72,8 +98,10 @@ class HistoryOrderWidget extends StatelessWidget {
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
               Text(
-                parcel ? orderModel.parcelCategory != null ? orderModel.parcelCategory!.name! : 'no_parcel_category_data_found'.tr : orderModel.storeName ?? 'no_store_data_found'.tr,
+                subtitleText,
                 style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 

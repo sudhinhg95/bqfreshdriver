@@ -45,12 +45,6 @@ class CollectMoneyDeliverySheetWidget extends StatelessWidget {
               const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Image.asset(Images.deliveredSuccess, height: 100, width: 100),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-
-              Text(
-                'collect_money_from_customer'.tr, textAlign: TextAlign.center,
-                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
-              ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -69,12 +63,6 @@ class CollectMoneyDeliverySheetWidget extends StatelessWidget {
               const SizedBox(height: Dimensions.paddingSizeLarge),
 
               Image.asset(Images.deliveredSuccess, height: 100, width: 100),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-
-              Text(
-                'want_to_complete_the_order'.tr, textAlign: TextAlign.center,
-                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
-              ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
               SizedBox(height: verify! ? 20 : 40),
             ]),

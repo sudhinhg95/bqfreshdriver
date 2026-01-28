@@ -93,14 +93,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
                     InkWell(
                       onTap: () {
-                        notificationController.addSeenNotificationId(notificationController.notificationList![index].id!);
+                        final model = notificationController.notificationList![index];
+                        notificationController.addSeenNotificationId(model.id!);
 
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return NotificationDialogWidget(notificationModel: notificationController.notificationList![index]);
-                          },
-                        );
+                        // If this notification is linked to an order, go directly to order details
+                        final orderId = model.data?.orderId;
+                        if (orderId != null) {
+                          Get.toNamed(RouteHelper.getOrderDetailsRoute(orderId, fromNotification: true));
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return NotificationDialogWidget(notificationModel: model);
+                            },
+                          );
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -144,8 +151,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               ]),
                               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
+                              // Extra details line: order id and customer name if available
+                              Builder(builder: (context) {
+                                final data = notificationController.notificationList![index].data;
+                                final List<String> parts = [];
+                                if (data?.orderId != null) {
+                                  parts.add('${'order'.tr} #${data!.orderId}');
+                                }
+                                if (data?.customerName != null && data!.customerName!.isNotEmpty) {
+                                  parts.add(data.customerName!);
+                                }
+                                if (parts.isEmpty) {
+                                  return const SizedBox();
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 40, bottom: 2),
+                                  child: Text(
+                                    parts.join(' • '),
+                                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              }),
+
                               Padding(
-                                padding: const EdgeInsets.only(right: 40),
+                                padding: const EdgeInsets.only(right: 40, top: 2),
                                 child: Text(
                                   notificationController.notificationList![index].description ?? '',
                                   style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: isSeen ? Theme.of(context).disabledColor : Theme.of(context).hintColor),

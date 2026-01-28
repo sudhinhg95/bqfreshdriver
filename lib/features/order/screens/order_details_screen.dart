@@ -339,6 +339,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       showButton: controllerOrderModel.orderStatus != 'delivered' && controllerOrderModel.orderStatus != 'failed'
                           && controllerOrderModel.orderStatus != 'canceled' && controllerOrderModel.orderStatus != 'refunded',
                       isStore: parcel ? false : true, isChatAllow: showChatPermission,
+                      highlight: true,
                       messageOnTap: () {
                         if(controllerOrderModel.customer != null) {
                           Get.toNamed(RouteHelper.getChatRoute(

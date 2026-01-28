@@ -25,18 +25,7 @@ class NotificationDialogWidget extends StatelessWidget {
               ),
             ),
 
-            Container(
-              height: 150, width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), color: Theme.of(context).primaryColor.withOpacity( 0.20)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                child: CustomImageWidget(
-                  image: '${notificationModel.imageFullUrl}',
-                  height: 150, width: MediaQuery.of(context).size.width, fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            // Remove the large image block since notifications usually have no image
             const SizedBox(height: Dimensions.paddingSizeLarge),
 
             Padding(
