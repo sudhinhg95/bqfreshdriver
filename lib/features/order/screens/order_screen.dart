@@ -64,8 +64,11 @@ class _OrderScreenState extends State<OrderScreen> {
             MaterialPageRoute(builder: (context) => MultiOrderRouteScreen()),
           );
         },
-        label: Text('Show Multi-Order Route'),
-        icon: Icon(Icons.route),
+        label: Text(
+          'Show Multi-Order Route',
+          style: TextStyle(color: Colors.white),
+        ),
+        icon: Icon(Icons.route, color: Colors.white),
       ),
 
       body: GetBuilder<OrderController>(builder: (orderController) {

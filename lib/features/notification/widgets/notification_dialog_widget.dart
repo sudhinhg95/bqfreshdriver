@@ -2,7 +2,6 @@ import 'package:sixam_mart_delivery/features/notification/domain/models/notifica
 import 'package:sixam_mart_delivery/util/dimensions.dart';
 import 'package:sixam_mart_delivery/util/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:sixam_mart_delivery/common/widgets/custom_image_widget.dart';
 
 class NotificationDialogWidget extends StatelessWidget {
   final NotificationModel notificationModel;

@@ -1,6 +1,5 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:sixam_mart_delivery/features/auth/controllers/auth_controller.dart';
-import 'package:sixam_mart_delivery/features/profile/controllers/profile_controller.dart';
 import 'package:sixam_mart_delivery/features/splash/controllers/splash_controller.dart';
 import 'package:sixam_mart_delivery/helper/custom_validator_helper.dart';
 import 'package:sixam_mart_delivery/helper/route_helper.dart';

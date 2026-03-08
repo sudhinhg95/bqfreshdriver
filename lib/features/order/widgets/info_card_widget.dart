@@ -3,6 +3,7 @@ import 'package:sixam_mart_delivery/util/dimensions.dart';
 import 'package:sixam_mart_delivery/util/styles.dart';
 import 'package:sixam_mart_delivery/common/widgets/custom_image_widget.dart';
 import 'package:sixam_mart_delivery/common/widgets/custom_snackbar_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -162,9 +163,9 @@ class InfoCardWidget extends StatelessWidget {
 
               TextButton.icon(
                 onPressed: () async {
-                  if(await canLaunchUrlString('tel:$phone')) {
-                    launchUrlString('tel:$phone', mode: LaunchMode.externalApplication);
-                  }else {
+                  try {
+                    await launchUrlString('tel:$phone');
+                  } catch (_) {
                     showCustomSnackBar('invalid_phone_number_found');
                   }
                 },
@@ -186,11 +187,26 @@ class InfoCardWidget extends StatelessWidget {
 
               TextButton.icon(
                 onPressed: () async {
-                  String url ='https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&mode=d';
-                  if (await canLaunchUrlString(url)) {
-                    await launchUrlString(url, mode: LaunchMode.externalApplication);
-                  } else {
-                    throw '${'could_not_launch'.tr} $url';
+                  if (latitude == null || longitude == null) {
+                    showCustomSnackBar('could_not_launch'.tr);
+                    return;
+                  }
+
+                  final destination = '$latitude,$longitude';
+                  final webUrl = 'https://www.google.com/maps/dir/?api=1&destination=$destination&mode=d';
+                  try {
+                    if (kIsWeb) {
+                      await launchUrlString(webUrl, webOnlyWindowName: '_blank');
+                    } else if (GetPlatform.isAndroid) {
+                      final navUrl = 'google.navigation:q=$destination&mode=d';
+                      await launchUrlString(navUrl);
+                    } else {
+                      await launchUrlString(webUrl);
+                    }
+                  } catch (e) {
+                    // ignore: avoid_print
+                    print('Error launching URL (info_card_widget): $e');
+                    showCustomSnackBar('could_not_launch'.tr);
                   }
                 },
                 icon: Icon(

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart' as fm;
 import 'package:latlong2/latlong.dart' as latlng;
@@ -31,15 +31,13 @@ class _MultiOrderRouteScreenState extends State<MultiOrderRouteScreen> {
         return {'lat': lat, 'lng': lng};
       }).toList();
       if (customerLocations.isEmpty) return;
-      final origin = '${driverLat},${driverLng}';
+      final origin = '$driverLat,$driverLng';
       final destination = '${customerLocations.last['lat']},${customerLocations.last['lng']}';
       final waypoints = customerLocations.length > 1
           ? customerLocations.sublist(0, customerLocations.length - 1)
               .map((loc) => '${loc['lat']},${loc['lng']}').join('|')
           : '';
-      final url = 'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination'
-          + (waypoints.isNotEmpty ? '&waypoints=$waypoints' : '')
-          + '&travelmode=driving';
+      final url = 'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination${waypoints.isNotEmpty ? '&waypoints=$waypoints' : ''}&travelmode=driving';
       _launchUrl(url);
     }
   gmaps.GoogleMapController? _mapController;
@@ -49,6 +47,10 @@ class _MultiOrderRouteScreenState extends State<MultiOrderRouteScreen> {
   List<fm.Marker> _mobileOsmMarkers = [];
   List<latlng.LatLng> _webPolylinePoints = [];
   List orders = [];
+  gmaps.CameraPosition _initialMobileCameraPosition = const gmaps.CameraPosition(
+    target: gmaps.LatLng(26.2285, 50.5860),
+    zoom: 12,
+  );
 
   @override
   void initState() {
@@ -74,6 +76,7 @@ class _MultiOrderRouteScreenState extends State<MultiOrderRouteScreen> {
     // Example driver location
     latlng.LatLng driverLocationWeb = latlng.LatLng(26.2285, 50.5860);
     gmaps.LatLng driverLocationMobile = gmaps.LatLng(26.2285, 50.5860);
+    _initialMobileCameraPosition = gmaps.CameraPosition(target: driverLocationMobile, zoom: 12);
     // Sort by distance from driver (web)
     customerLocationsWeb.sort((a, b) => _distance(driverLocationWeb, a).compareTo(_distance(driverLocationWeb, b)));
     customerLocationsMobile.sort((a, b) => _distanceMobile(driverLocationMobile, a).compareTo(_distanceMobile(driverLocationMobile, b)));
@@ -183,13 +186,25 @@ class _MultiOrderRouteScreenState extends State<MultiOrderRouteScreen> {
   }
 
   void _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      // ignore: use_build_context_synchronously
+    try {
+      if (kIsWeb) {
+        await launchUrlString(url, webOnlyWindowName: '_blank');
+      } else if (GetPlatform.isAndroid) {
+        // Convert the dest URL to a navigation intent on Android when possible
+        final uri = Uri.parse(url);
+        final dest = uri.queryParameters['destination'];
+        final navUrl = dest != null && dest.isNotEmpty
+            ? 'google.navigation:q=$dest&mode=d'
+            : url;
+        await launchUrlString(navUrl);
+      } else {
+        await launchUrlString(url);
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously, avoid_print
+      print('Error launching URL (multi_order_route_screen): $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not launch map')),
+        const SnackBar(content: Text('Could not launch map')),
       );
     }
   }
@@ -243,21 +258,15 @@ class _MultiOrderRouteScreenState extends State<MultiOrderRouteScreen> {
                     ),
                   )
                 : SizedBox.expand(
-                    child: fm.FlutterMap(
-                      options: fm.MapOptions(
-                        center: _webPolylinePoints.isNotEmpty ? _webPolylinePoints.first : latlng.LatLng(26.2285, 50.5860),
-                        zoom: 12,
-                      ),
-                      children: [
-                        fm.TileLayer(
-                          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: ['a', 'b', 'c'],
-                        ),
-                        fm.MarkerLayer(markers: _mobileOsmMarkers),
-                        fm.PolylineLayer(
-                          polylines: [fm.Polyline(points: _webPolylinePoints, color: Colors.blue, strokeWidth: 5)],
-                        ),
-                      ],
+                    child: gmaps.GoogleMap(
+                      initialCameraPosition: _initialMobileCameraPosition,
+                      markers: _mobileMarkers,
+                      polylines: _mobilePolylines,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      onMapCreated: (controller) {
+                        _mapController = controller;
+                      },
                     ),
                   ))
             : const Center(child: Text('No valid customer locations to show on map.')),
@@ -265,8 +274,11 @@ class _MultiOrderRouteScreenState extends State<MultiOrderRouteScreen> {
       floatingActionButton: hasValidLocations
           ? FloatingActionButton.extended(
               onPressed: _launchMultiStopRoute,
-              icon: Icon(Icons.alt_route),
-              label: Text('Route All'),
+              icon: const Icon(Icons.alt_route, color: Colors.white),
+              label: const Text(
+                'Route All',
+                style: TextStyle(color: Colors.white),
+              ),
             )
           : null,
     );

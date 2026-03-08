@@ -49,9 +49,9 @@ class UpdateScreen extends StatelessWidget {
               }else if(GetPlatform.isIOS) {
                 appUrl = Get.find<SplashController>().configModel!.appUrlIos;
               }
-              if(await canLaunchUrlString(appUrl!)) {
-                launchUrlString(appUrl, mode: LaunchMode.externalApplication);
-              }else {
+              try {
+                await launchUrlString(appUrl!, mode: LaunchMode.externalApplication);
+              } catch (_) {
                 showCustomSnackBar('${'can_not_launch'.tr} $appUrl');
               }
             }) : const SizedBox(),

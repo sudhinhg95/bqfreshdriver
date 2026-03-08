@@ -1,7 +1,8 @@
 name: sixam_mart_delivery
 description: A new Flutter application.
-publish_to: 'none' #
-version: 2.0.0+16
+publish_to: 'none'
+
+version: 2.0.0+17
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -25,12 +26,9 @@ dependencies:
   flutter_switch: ^0.3.2
   shimmer_animation: 2.2.1
   geolocator: ^14.0.2
-dependency_overrides:
-  geolocator_android:
-    path: plugins/geolocator_android
-  geocoding: 3.0.0
+
   google_maps_flutter: ^2.9.0
-  url_launcher: ^6.3.0
+  url_launcher: ^6.3.2
   vibration: ^3.1.5
   image_picker: ^1.1.2
   phone_numbers_parser: ^9.0.0
@@ -53,9 +51,13 @@ dependency_overrides:
   open_filex: ^4.7.0
   flutter_map: 6.2.1
   latlong2: ^0.9.1
-
   collection: ^1.19.0
   web: ^1.0.0
+
+dependency_overrides:
+  geolocator_android:
+    path: plugins/geolocator_android
+  geocoding: 3.0.0
 
 dev_dependencies:
   flutter_test:

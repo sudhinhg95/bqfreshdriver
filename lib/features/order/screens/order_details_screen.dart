@@ -48,24 +48,16 @@ class OrderDetailsScreen extends StatefulWidget {
 }
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBindingObserver {
-  Timer? _timer;
-
-  void _startApiCalling(){
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      Get.find<OrderController>().getOrderWithId(widget.orderId!);
-    });
-  }
 
   Future<void> _loadData() async {
-    debugPrint('[OrderDetailsScreen] _loadData called for orderId: ' + widget.orderId.toString());
+    debugPrint('[OrderDetailsScreen] _loadData called for orderId: ${widget.orderId}');
     Get.find<OrderController>().pickPrescriptionImage(isRemove: true, isCamera: false);
     await Get.find<OrderController>().getOrderWithId(widget.orderId);
-    debugPrint('[OrderDetailsScreen] getOrderWithId finished for orderId: ' + widget.orderId.toString());
+    debugPrint('[OrderDetailsScreen] getOrderWithId finished for orderId: ${widget.orderId}');
     if(Get.find<OrderController>().orderModel != null) {
       Get.find<OrderController>().getOrderDetails(widget.orderId, Get.find<OrderController>().orderModel!.orderType == 'parcel');
     } else {
-      debugPrint('[OrderDetailsScreen] orderModel is null after getOrderWithId for orderId: ' + widget.orderId.toString());
+      debugPrint('[OrderDetailsScreen] orderModel is null after getOrderWithId for orderId: ${widget.orderId}');
     }
     await Get.find<OrderController>().getLatestOrders();
     if(Get.find<OrderController>().showDeliveryImageField){
@@ -79,22 +71,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
     WidgetsBinding.instance.addObserver(this);
     _loadData();
-    _startApiCalling();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if(state == AppLifecycleState.paused) {
-      _timer?.cancel();
-    }
-  }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-    _timer?.cancel();
   }
 
   @override
@@ -578,7 +561,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     ]) : const SizedBox(),
                     (order.additionalCharge != null && order.additionalCharge! > 0) ? const SizedBox(height: 10) : const SizedBox(),
 
-                    (tax! == 0) || taxIncluded ? const SizedBox() : Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    (tax == 0) || taxIncluded ? const SizedBox() : Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text('vat_tax'.tr, style: robotoRegular),
                       Text('(+) ${PriceConverterHelper.convertPrice(tax)}', style: robotoRegular),
                     ]),
@@ -747,8 +730,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     }
 
                   },
-                ) : showBottomView ? ((accepted! && !parcel && (!cod || restConfModel || selfDelivery))
-                 || processing! || confirmed!) ? Container(
+                ) : showBottomView ? ((accepted && !parcel && (!cod || restConfModel || selfDelivery))
+                 || processing || confirmed) ? Container(
                   padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -757,7 +740,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    processing! ? 'order_is_preparing'.tr : 'order_waiting_for_process'.tr,
+                    processing ? 'order_is_preparing'.tr : 'order_waiting_for_process'.tr,
                     style: robotoMedium,
                   ),
                 ) : showSlider ? ((cod && accepted && !restConfModel && cancelPermission! && !selfDelivery)

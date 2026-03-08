@@ -13,7 +13,6 @@ import 'package:sixam_mart_delivery/features/dashboard/widgets/bottom_nav_item_w
 import 'package:sixam_mart_delivery/features/dashboard/widgets/new_request_dialog_widget.dart';
 import 'package:sixam_mart_delivery/features/home/screens/home_screen.dart';
 import 'package:sixam_mart_delivery/features/profile/screens/profile_screen.dart';
-import 'package:sixam_mart_delivery/features/order/screens/order_request_screen.dart';
 import 'package:sixam_mart_delivery/features/order/screens/order_screen.dart';
 import 'package:sixam_mart_delivery/features/order/screens/delivered_orders_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -142,7 +141,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         }
       },
       child: Scaffold(
-        bottomNavigationBar: GetPlatform.isDesktop ? const SizedBox() : BottomAppBar(
+        bottomNavigationBar: BottomAppBar(
           elevation: 5,
           notchMargin: 5,
           shadowColor: Colors.grey[300],

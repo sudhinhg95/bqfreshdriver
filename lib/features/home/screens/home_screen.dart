@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -66,6 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _checkSystemNotification() async {
+    if(kIsWeb) {
+      return;
+    }
+
     if(await Permission.notification.status.isDenied || await Permission.notification.status.isPermanentlyDenied) {
       await Get.find<AuthController>().setNotificationActive(false);
     }
@@ -89,6 +94,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> checkPermission() async {
+    if(kIsWeb) {
+      return;
+    }
+
     var notificationStatus = await Permission.notification.status;
     var batteryStatus = await Permission.ignoreBatteryOptimizations.status;
 
@@ -119,6 +128,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> requestNotificationPermission() async {
+    if(kIsWeb) {
+      setState(() {
+        _isNotificationPermissionGranted = true;
+        _isBatteryOptimizationGranted = true;
+      });
+      Get.find<ProfileController>().setBackgroundNotificationActive(true);
+      return;
+    }
+
     if (await Permission.notification.request().isGranted) {
       checkPermission();
       return;
@@ -130,6 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void requestBatteryOptimization() async {
+    if(kIsWeb) {
+      return;
+    }
+
     var status = await Permission.ignoreBatteryOptimizations.status;
 
     if (status.isGranted) {

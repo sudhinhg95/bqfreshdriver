@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 ThemeData dark = ThemeData(
+  useMaterial3: false,
   fontFamily: 'Roboto',
   primaryColor: const Color(0xFF895C30),
   secondaryHeaderColor: const Color(0xFF009f67),
@@ -12,9 +13,15 @@ ThemeData dark = ThemeData(
   scaffoldBackgroundColor: const Color(0xFF161617),
   textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: const Color(0xFF895C30))),
   colorScheme: const ColorScheme.dark(primary: Color(0xFF54b46b), secondary: Color(0xFF54b46b)).copyWith(error: const Color(0xFFdd3135)),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color(0xFF161617),
+    foregroundColor: Colors.white,
+    elevation: 0,
+    surfaceTintColor: Color(0xFF161617),
+  ),
   popupMenuTheme: const PopupMenuThemeData(color: Color(0xFF29292D), surfaceTintColor: Color(0xFF29292D)),
-  dialogTheme: const DialogTheme(surfaceTintColor: Colors.white10),
+  dialogTheme: const DialogThemeData(surfaceTintColor: Colors.white10),
   floatingActionButtonTheme: FloatingActionButtonThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(500))),
-  bottomAppBarTheme: const BottomAppBarTheme(color: Colors.black, height: 60, padding: EdgeInsets.symmetric(vertical: 5)),
+  bottomAppBarTheme: const BottomAppBarThemeData(color: Colors.black, height: 60, padding: EdgeInsets.symmetric(vertical: 5)),
   dividerTheme: const DividerThemeData(thickness: 0.2, color: Color(0xFFA0A4A8)),
 );

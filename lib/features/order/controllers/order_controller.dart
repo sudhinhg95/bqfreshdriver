@@ -110,34 +110,34 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getOrderWithId(int? orderId) async {
     _orderModel = null;
-    debugPrint('[getOrderWithId] Fetching order with ID: ' + orderId.toString());
+    debugPrint('[getOrderWithId] Fetching order with ID: $orderId');
     try {
       Response response = await orderServiceInterface.getOrderWithId(orderId).timeout(const Duration(seconds: 10), onTimeout: () {
-        debugPrint('[getOrderWithId] API call timed out for order ID: ' + orderId.toString());
-        showCustomSnackBar('Order API timed out (ID: ' + orderId.toString() + ')', isError: true);
+        debugPrint('[getOrderWithId] API call timed out for order ID: $orderId');
+        showCustomSnackBar('Order API timed out (ID: $orderId)', isError: true);
         update();
         return Response(statusCode: 408, statusText: 'Request Timeout');
       });
-      debugPrint('[getOrderWithId] Response status: ' + response.statusCode.toString());
+      debugPrint('[getOrderWithId] Response status: ${response.statusCode}');
       if(response.statusCode == 200) {
         try {
-          debugPrint('[getOrderWithId] Raw response body: ' + response.body.toString());
+          debugPrint('[getOrderWithId] Raw response body: ${response.body}');
           _orderModel = OrderModel.fromJson(response.body);
-          debugPrint('[getOrderWithId] Order found: ' + _orderModel.toString());
+          debugPrint('[getOrderWithId] Order found: $_orderModel');
         } catch (e, stack) {
-          debugPrint('[getOrderWithId] Error parsing OrderModel: ' + e.toString());
+          debugPrint('[getOrderWithId] Error parsing OrderModel: $e');
           debugPrint(stack.toString());
-          showCustomSnackBar('Order data error: ' + e.toString(), isError: true);
+          showCustomSnackBar('Order data error: $e', isError: true);
         }
       } else {
-        debugPrint('[getOrderWithId] Order not found or error. Status: ' + response.statusCode.toString() + ', Body: ' + response.body.toString());
-        showCustomSnackBar('Order not found or cannot be opened (ID: ' + orderId.toString() + ')', isError: true);
+        debugPrint('[getOrderWithId] Order not found or error. Status: ${response.statusCode}, Body: ${response.body}');
+        showCustomSnackBar('Order not found or cannot be opened (ID: $orderId)', isError: true);
         await Get.find<OrderController>().getCurrentOrders();
       }
     } catch (e, stack) {
-      debugPrint('[getOrderWithId] Exception: ' + e.toString());
+      debugPrint('[getOrderWithId] Exception: $e');
       debugPrint(stack.toString());
-      showCustomSnackBar('Order loading error: ' + e.toString(), isError: true);
+      showCustomSnackBar('Order loading error: $e', isError: true);
     }
     update();
   }
@@ -256,7 +256,7 @@ class OrderController extends GetxController implements GetxService {
         _orderDetailsModel = [];
       }
     } catch (e) {
-      showCustomSnackBar('Order details error: ' + e.toString(), isError: true);
+      showCustomSnackBar('Order details error: $e', isError: true);
       _orderDetailsModel = [];
     }
     update();

@@ -9,7 +9,7 @@ import 'package:sixam_mart_delivery/common/widgets/custom_snackbar_widget.dart';
 import 'package:sixam_mart_delivery/features/order/screens/order_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderWidget extends StatelessWidget {
   final OrderModel orderModel;
@@ -116,27 +116,77 @@ class OrderWidget extends StatelessWidget {
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
                 InkWell(
-                  onTap: () async {
-                    String url;
-                    if(parcel && (orderModel.orderStatus == 'picked_up')) {
-                      url = 'https://www.google.com/maps/dir/?api=1&destination=${orderModel.receiverDetails!.latitude}'
-                          ',${orderModel.receiverDetails!.longitude}&mode=d';
-                    }else if(parcel) {
-                      url = 'https://www.google.com/maps/dir/?api=1&destination=${orderModel.deliveryAddress!.latitude}'
-                          ',${orderModel.deliveryAddress!.longitude}&mode=d';
-                    }else if(orderModel.orderStatus == 'picked_up') {
-                      url = 'https://www.google.com/maps/dir/?api=1&destination=${orderModel.deliveryAddress!.latitude}'
-                          ',${orderModel.deliveryAddress!.longitude}&mode=d';
-                    }else {
-                      url = 'https://www.google.com/maps/dir/?api=1&destination=${orderModel.storeLat ?? '0'}'
-                          ',${orderModel.storeLng ?? '0'}&mode=d';
-                    }
-                    if (await canLaunchUrlString(url)) {
-                      await launchUrlString(url, mode: LaunchMode.externalApplication);
-                    } else {
-                      showCustomSnackBar('${'could_not_launch'.tr} $url');
-                    }
-                  },
+                 onTap: () async {
+                      String destination;
+
+                      if (parcel && (orderModel.orderStatus == 'picked_up')) {
+                        destination = '${orderModel.receiverDetails!.latitude},${orderModel.receiverDetails!.longitude}';
+                      } else if (parcel) {
+                        destination = '${orderModel.deliveryAddress!.latitude},${orderModel.deliveryAddress!.longitude}';
+                      } else if (orderModel.orderStatus == 'picked_up') {
+                        destination = '${orderModel.deliveryAddress!.latitude},${orderModel.deliveryAddress!.longitude}';
+                      } else {
+                        destination = '${orderModel.storeLat ?? '0'},${orderModel.storeLng ?? '0'}';
+                      }
+
+                    try {
+
+                        if (GetPlatform.isAndroid) {
+
+                          final Uri googleNav = Uri.parse("google.navigation:q=$destination&mode=d");
+
+                          if (await canLaunchUrl(googleNav)) {
+                            await launchUrl(
+                              googleNav,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } else {
+                            final Uri webUrl = Uri.parse(
+                              "https://www.google.com/maps/dir/?api=1&destination=$destination&mode=d",
+                            );
+                            await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+                          }
+
+                        } else if (GetPlatform.isIOS) {
+
+                          // Try Google Maps app first
+                          final Uri googleMaps = Uri.parse(
+                            "comgooglemaps://?daddr=$destination&directionsmode=driving",
+                          );
+
+                          if (await canLaunchUrl(googleMaps)) {
+                            await launchUrl(
+                              googleMaps,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } else {
+
+                            // Fallback to Apple Maps
+                            final Uri appleMaps = Uri.parse(
+                              "https://maps.apple.com/?daddr=$destination&dirflg=d",
+                            );
+
+                            await launchUrl(
+                              appleMaps,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          }
+
+                        } else {
+
+                          // Web / Desktop fallback
+                          final Uri webUrl = Uri.parse(
+                            "https://www.google.com/maps/dir/?api=1&destination=$destination&mode=d",
+                          );
+
+                          await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+                        }
+
+                      } catch (e) {
+                        print('Error launching URL (order_widget): $e');
+                        showCustomSnackBar('could_not_launch'.tr);
+                      }
+                    },
                   child: Row(children: [
                     Icon(Icons.directions, size: 20, color: Theme.of(context).primaryColor),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),

@@ -20,6 +20,7 @@ import 'package:sixam_mart_delivery/features/profile/widgets/profile_button_widg
 import 'package:sixam_mart_delivery/features/profile/widgets/profile_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -58,6 +59,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void checkBatteryPermission() async {
+    if(kIsWeb) {
+      return;
+    }
+
     Future.delayed(const Duration(milliseconds: 400), () async {
       if(await Permission.ignoreBatteryOptimizations.status.isDenied) {
         Get.find<ProfileController>().setBackgroundNotificationActive(false);
@@ -149,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       scale: 0.7,
                       child: Switch(
                         value: profileController.backgroundNotification,
-                        activeColor: Theme.of(context).primaryColor,
+                        activeThumbColor: Theme.of(context).primaryColor,
                         inactiveThumbColor: Theme.of(context).primaryColor.withOpacity(0.5),
                         onChanged: (bool isActive) {
                           showBgNotificationBottomSheet(profileController.backgroundNotification);

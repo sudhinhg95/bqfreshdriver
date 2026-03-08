@@ -116,13 +116,52 @@ class CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                   backgroundColor: Theme.of(context).cardColor,
                   dialogBackgroundColor: Theme.of(context).cardColor,
                   flagWidth: 25,
+                  // Disable package-provided flags to avoid missing Bahrain asset
+                  showFlag: false,
+                  showFlagMain: false,
+                  showFlagDialog: false,
                   padding: EdgeInsets.zero,
                   onChanged: widget.onCountryChanged,
                   initialSelection: widget.countryDialCode,
                   favorite: [widget.countryDialCode!],
                   textStyle: robotoRegular.copyWith(
-                    fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyMedium!.color,
+                    fontSize: Dimensions.fontSizeDefault,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                   ),
+                  builder: (CountryCode country) {
+                    final isBahrain = (country.code ?? '').toUpperCase() == 'BH';
+                    Widget pseudoFlag = Container(
+                      width: 24,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: isBahrain ? Colors.red : Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        (country.code ?? '').toUpperCase(),
+                        style: robotoMedium.copyWith(
+                          fontSize: 8,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        pseudoFlag,
+                        const SizedBox(width: 6),
+                        Text(
+                          country.dialCode ?? '',
+                          style: robotoRegular.copyWith(
+                            fontSize: Dimensions.fontSizeDefault,
+                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

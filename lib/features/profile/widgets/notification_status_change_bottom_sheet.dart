@@ -7,6 +7,7 @@ import 'package:sixam_mart_delivery/features/auth/controllers/auth_controller.da
 import 'package:sixam_mart_delivery/util/dimensions.dart';
 import 'package:sixam_mart_delivery/util/images.dart';
 import 'package:sixam_mart_delivery/util/styles.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationStatusChangeBottomSheet extends StatelessWidget {
   const NotificationStatusChangeBottomSheet({super.key});
@@ -57,9 +58,15 @@ class NotificationStatusChangeBottomSheet extends StatelessWidget {
               Expanded(
                 child: !authController.notificationLoading ? CustomButtonWidget(
                   onPressed: () async {
-                    if(await Permission.notification.status.isDenied || await Permission.notification.status.isPermanentlyDenied){
+                    if(kIsWeb) {
+                      await authController.setNotificationActive(!authController.notification);
+                      Get.back();
+                      return;
+                    }
+
+                    if(await Permission.notification.status.isDenied || await Permission.notification.status.isPermanentlyDenied) {
                       showCustomSnackBar('make_sure_to_enable_app_notifications_first'.tr);
-                    }else{
+                    } else {
                       await authController.setNotificationActive(!authController.notification);
                       Get.back();
                     }

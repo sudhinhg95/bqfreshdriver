@@ -41,6 +41,10 @@
             <action android:name="android.intent.action.SEND" />
             <data android:mimeType="*/*" />
         </intent>
+         <intent>
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="google.navigation"/>
+        </intent>
     </queries>
 
     <application
@@ -51,8 +55,9 @@
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round">
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCQRda0t97PB8vAfMGXLNjSlntOto8-lFI"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCA5G2-xZk5qkmuw12nw4Rb8gUM1Dp0sTw" />
 
         <activity
             android:name=".MainActivity"
